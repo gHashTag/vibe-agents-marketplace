@@ -8,8 +8,8 @@
     {
       "name": "vibe-agents",
       "source": "./plugins/vibe-agents",
-      "description": "Complete swarm intelligence system for Claude Code with 20 specialized agents, 17 auto-activated skills, autonomous development workflow, diagnostics, knowledge keeper, and comprehensive patterns library.",
-      "version": "1.1.0",
+      "description": "Complete swarm intelligence system for Claude Code with 21 specialized agents, 18 auto-activated skills, autonomous development workflow, diagnostics, knowledge keeper, comprehensive patterns library, and interactive learning system.",
+      "version": "1.2.0",
       "author": {
         "name": "Vibee Team",
         "email": "team@vibee.dev"
