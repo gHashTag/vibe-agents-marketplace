@@ -194,9 +194,72 @@ const saveUser = (user: User): TaskEither<Error, void> => {
 
 ---
 
-## 🛠️ Утилиты
+## 🛠️ Продвинутые Утилиты
 
-### 10. eitherToTaskEither
+### 10. Каррирование (Curry)
+
+```typescript
+// Функция для каррирования
+const curry = <A extends unknown[], B>(
+  fn: (...args: A) => B
+) => {
+  return (...args: A): B | ((...args: A) => B) => {
+    if (args.length >= fn.length) {
+      return fn(...args)
+    }
+    return curry(fn.bind(null, ...args))
+  }
+}
+
+// Пример использования
+const checkBalance = curry((required: number, user: User): Either<Error, User> =>
+  user.balance >= required
+    ? right(user)
+    : left(new Error('Insufficient balance'))
+)
+
+const checkBalance10 = checkBalance(10)
+const checkBalance50 = checkBalance(50)
+
+const result1 = checkBalance10(user) // Частичное применение
+const result2 = checkBalance50(user)
+```
+
+### 11. fold - Обработка Обеих Веток
+
+```typescript
+// Для Either
+const fold = <E, A, B>(
+  onLeft: (error: E) => B,
+  onRight: (value: A) => B
+) => (
+  either: Either<E, A>
+): B => {
+  if (either._tag === 'Left') {
+    return onLeft(either.left)
+  }
+  return onRight(either.right)
+}
+
+// Использование fold
+const result = fold(
+  (error) => console.error('Error:', error),
+  (value) => console.log('Success:', value)
+)(eitherValue)
+
+// Для TaskEither
+const foldTaskEither = <E, A, B>(
+  onLeft: (error: E) => Promise<B>,
+  onRight: (value: A) => Promise<B>
+) => async (
+  taskEither: TaskEither<E, A>
+): Promise<B> => {
+  const result = await taskEither()
+  return fold(onLeft, onRight)(result)
+}
+```
+
+### 12. eitherToTaskEither
 
 ```typescript
 const eitherToTaskEither = <E, A>(
@@ -206,7 +269,7 @@ const eitherToTaskEither = <E, A>(
 }
 ```
 
-### 11. taskEitherToPromise
+### 13. taskEitherToPromise
 
 ```typescript
 const taskEitherToPromise = <E, A>(
@@ -221,7 +284,7 @@ const taskEitherToPromise = <E, A>(
 }
 ```
 
-### 12. combine
+### 14. combine - Параллельное Выполнение
 
 ```typescript
 const combine = <E, A, B>(
@@ -240,6 +303,113 @@ const combine = <E, A, B>(
     return right([result1.right, result2.right])
   }
 }
+
+// combine с произвольным количеством
+const combineAll = <E, A>(
+  taskEithers: TaskEither<E, A>[]
+): TaskEither<E, A[]> => {
+  return async () => {
+    const results = await Promise.all(
+      taskEithers.map(te => te())
+    )
+
+    for (const result of results) {
+      if (result._tag === 'Left') {
+        return result
+      }
+    }
+
+    return right(results.map(r => r.right))
+  }
+}
+```
+
+### 15. partition - Разделение Успешных и Ошибочных
+
+```typescript
+const partition = <E, A>(
+  taskEithers: TaskEither<E, A>[]
+): TaskEither<E, { lefts: E[]; rights: A[] }> => {
+  return async () => {
+    const results = await Promise.all(
+      taskEithers.map(te => te())
+    )
+
+    const lefts: E[] = []
+    const rights: A[] = []
+
+    for (const result of results) {
+      if (result._tag === 'Left') {
+        lefts.push(result.left)
+      } else {
+        rights.push(result.right)
+      }
+    }
+
+    if (lefts.length > 0) {
+      return left(new Error('Some operations failed'))
+    }
+
+    return right({ lefts, rights })
+  }
+}
+```
+
+### 16. retry - Повторные Попытки
+
+```typescript
+const retry = <E, A>(
+  taskEither: TaskEither<E, A>,
+  times: number = 3
+): TaskEither<E, A> => {
+  return async () => {
+    let lastError: E | null = null
+
+    for (let i = 0; i < times; i++) {
+      const result = await taskEither()
+
+      if (result._tag === 'Right') {
+        return result
+      }
+
+      lastError = result.left
+
+      // Задержка перед повторной попыткой (экспоненциальная)
+      if (i < times - 1) {
+        await new Promise(resolve =>
+          setTimeout(resolve, Math.pow(2, i) * 1000)
+        )
+      }
+    }
+
+    return left(lastError!)
+  }
+}
+```
+
+### 17. Обработка Ошибок с Восстановлением
+
+```typescript
+const recover = <E, A>(
+  taskEither: TaskEither<E, A>,
+  recoverFn: (error: E) => TaskEither<E, A>
+): TaskEither<E, A> => {
+  return async () => {
+    const result = await taskEither()
+
+    if (result._tag === 'Left') {
+      return recoverFn(result.left)()
+    }
+
+    return result
+  }
+}
+
+// Использование
+const fetchDataWithFallback = recover(
+  fetchData, // Может вернуть ошибку
+  () => fetchCacheData() // Восстановление через кэш
+)
 ```
 
 ---
