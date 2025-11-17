@@ -1,0 +1,50 @@
+{
+  "name": "vibe-agents-marketplace",
+  "owner": {
+    "name": "Vibee Team",
+    "email": "team@vibee.dev"
+  },
+  "plugins": [
+    {
+      "name": "vibe-agents",
+      "source": "./plugins/vibe-agents",
+      "description": "Complete swarm intelligence system for Claude Code with 17 specialized agents, 17 auto-activated skills, and autonomous development workflow.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Vibee Team",
+        "email": "team@vibee.dev"
+      },
+      "keywords": [
+        "claude-code",
+        "agents",
+        "skills",
+        "ai",
+        "automation",
+        "swarm-intelligence",
+        "autonomous-development",
+        "typescript",
+        "functional-programming",
+        "tdd"
+      ],
+      "repository": {
+        "type": "github",
+        "url": "https://github.com/gHashTag/vibe-agents-marketplace"
+      },
+      "documentation": {
+        "overview": "Complete system of 17 specialized agents working together for autonomous development",
+        "agents_count": 17,
+        "skills_count": 17,
+        "features": [
+          "Queen Bee coordination pattern",
+          "Autonomous agent workflow",
+          "Cross-agent knowledge sharing",
+          "Automatic task distribution",
+          "TDD integration",
+          "Functional programming",
+          "Russian localization",
+          "SubagentStop hooks v2.0.42"
+        ]
+      }
+    }
+  ]
+}
