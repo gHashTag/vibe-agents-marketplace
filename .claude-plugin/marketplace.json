@@ -26,25 +26,7 @@
         "functional-programming",
         "tdd"
       ],
-      "repository": {
-        "type": "github",
-        "url": "https://github.com/gHashTag/vibe-agents-marketplace"
-      },
-      "documentation": {
-        "overview": "Complete system of 17 specialized agents working together for autonomous development",
-        "agents_count": 17,
-        "skills_count": 17,
-        "features": [
-          "Queen Bee coordination pattern",
-          "Autonomous agent workflow",
-          "Cross-agent knowledge sharing",
-          "Automatic task distribution",
-          "TDD integration",
-          "Functional programming",
-          "Russian localization",
-          "SubagentStop hooks v2.0.42"
-        ]
-      }
+      "repository": "https://github.com/gHashTag/vibe-agents-marketplace"
     }
   ]
 }
