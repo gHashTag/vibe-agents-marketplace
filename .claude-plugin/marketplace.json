@@ -8,8 +8,8 @@
     {
       "name": "vibe-agents",
       "source": "./plugins/vibe-agents",
-      "description": "Complete swarm intelligence system for Claude Code with 21 specialized agents, 18 auto-activated skills, autonomous development workflow, diagnostics, knowledge keeper, comprehensive patterns library, and interactive learning system.",
-      "version": "1.2.0",
+      "description": "Queen Bee Orchestration System v2.0.42 - 21 connected agents with SubagentStop hooks (agent_id, agent_transcript_path), professional workflow, autonomous development, diagnostics, knowledge keeper, patterns library, and interactive learning.",
+      "version": "2.0.42",
       "author": {
         "name": "Vibee Team",
         "email": "team@vibee.dev"
