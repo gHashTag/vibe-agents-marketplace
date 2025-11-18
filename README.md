@@ -4,7 +4,7 @@
 
 [![Лицензия: MIT](https://img.shields.io/badge/Лицензия-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Совместим-green.svg)](https://claude.ai/code)
-[![Версия](https://img.shields.io/badge/Версия-2.0.48-blue.svg)]()
+[![Версия](https://img.shields.io/badge/Версия-2.0.60-blue.svg)]()
 
 ---
 
@@ -21,13 +21,24 @@
 /task Ваша задача здесь
 ```
 
+### 🎯 Для Новичков
+
+**Новое: Прочитайте [QUICK_START.md](docs/QUICK_START.md)!**
+
+Пошаговое руководство "5 минут до первого результата":
+- ✅ Установка за 1 минуту
+- ✅ Первый проект за 2 минуты
+- ✅ Разбор результата
+
+**💡 Совет:** Начните с QUICK_START.md, затем возвращайтесь к этому README!
+
 ---
 
 ## 🎯 Что Это?
 
-**Queen Bee Orchestration System v2.0.48** - система из **21 профессионального агента** с **100% бриллиантовым качеством** для полной автономной разработки.
+**Queen Bee Orchestration System v2.0.60** - система из **21 профессионального агента** с **100% бриллиантовым качеством** для полной автономной разработки.
 
-**🆕 Version 2.0.48 - Complete Diamond Quality:**
+**🆕 Version 2.0.60 - Complete Diamond Quality:**
 - ✅ **21/21 агент** доведены до профессионального уровня (700-1000+ строк документации)
 - ✅ **Swarm Intelligence Architecture** - роевой интеллект с Queen Bee паттерном
 - ✅ **Functional Programming Core** - TaskEither, pipe, chain, map
@@ -249,23 +260,20 @@ Task(
 
 ## 📚 Документация
 
-### Полная Документация
-- **[Паттерны](./.claude-plugin/plugins/vibe-agents/.claude/patterns/README.md)** - архитектурные паттерны
-- **[Функциональное Программирование](./.claude-plugin/plugins/vibe-agents/.claude/patterns/functional-programming.md)** - основы FP
-- **[Troubleshooting Guide](./.claude-plugin/plugins/vibe-agents/.claude/patterns/troubleshooting.md)** - решение проблем
-- **[Диаграммы Архитектуры](./.claude-plugin/plugins/vibe-agents/.claude/patterns/architecture-diagrams.md)** - визуализация
-- **[Агенты](./.claude-plugin/plugins/vibe-agents/.claude/agents/)** - описания всех агентов
-- **[Скиллы](./.claude-plugin/plugins/vibe-agents/.claude/skills/)** - автоактивация
+### Основные Документы
+- **[📖 docs/INSTALLATION_GUIDE.md](./docs/INSTALLATION_GUIDE.md)** - Полное руководство по установке
+- **[🚀 docs/README.md](./docs/README.md)** - Навигация по всей документации
+- **[🔗 docs/SYMLINK_SETUP.md](./docs/SYMLINK_SETUP.md)** - Архитектура симлинков
+- **[✅ docs/SYMLINK_ARCHITECTURE_COMPLETE.md](./docs/SYMLINK_ARCHITECTURE_COMPLETE.md)** - Итоговый отчёт
 
-### Агенты (Детально)
-- [vibe-queen](./.claude-plugin/plugins/vibe-agents/.claude/agents/vibe-queen.md) - координация роя
-- [vibe-knowledge-keeper](./.claude-plugin/plugins/vibe-agents/.claude/agents/vibe-knowledge-keeper.md) - хранитель знаний
-- [vibe-diagnostics](./.claude-plugin/plugins/vibe-agents/.claude/agents/vibe-diagnostics.md) - диагностика
-- [vibe-lead](./.claude-plugin/plugins/vibe-agents/.claude/agents/vibe-lead.md) - лидер разработки
-- [vibe-spec](./.claude-plugin/plugins/vibe-agents/.claude/agents/vibe-spec.md) - создание техзаданий
-- [vibe-coder](./.claude-plugin/plugins/vibe-agents/.claude/agents/vibe-coder.md) - написание кода
-- [vibe-tester](./.claude-plugin/plugins/vibe-agents/.claude/agents/vibe-tester.md) - тестирование
-- [и все остальные...](./.claude-plugin/plugins/vibe-agents/.claude/agents/)
+### Команды Плагина
+- **[/task](./plugins/vibe-agents/.claude-plugin/commands/task.md)** - Главная команда (21 агент)
+- **[/learn](./plugins/vibe-agents/.claude-plugin/commands/learn.md)** - Обучение и курсы
+
+### Для Разработчиков
+- **[📦 docs/PLUGIN_DISTRIBUTION_STRATEGY.md](./docs/PLUGIN_DISTRIBUTION_STRATEGY.md)** - Стратегия распространения
+
+> **💡 Совет новичкам:** Начните с [INSTALLATION_GUIDE.md](./docs/INSTALLATION_GUIDE.md) для установки, затем попробуйте `/task` команду!
 
 ---
 

@@ -412,7 +412,7 @@ cat ~/.claude/plugins/vibe-agents-marketplace/plugins/vibe-agents/docs/EXAMPLES.
 
 **Vibe Agents** легко установить и использовать! Выберите метод, который подходит именно вам, и начинайте использовать мощь 21 AI-агента для автономной разработки.
 
-**Следующий шаг:** Прочитайте [QUICK_START.md](docs/QUICK_START.md) для начала работы.
+**Следующий шаг:** Прочитайте [QUICK_START.md](./QUICK_START.md) для начала работы.
 
 ---
 
