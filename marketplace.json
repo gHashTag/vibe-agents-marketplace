@@ -1,0 +1,22 @@
+{
+  "name": "vibe-agents-marketplace",
+  "version": "1.0.0",
+  "description": "Centralized marketplace for Vibe Agents Plugin",
+  "source": "https://github.com/vibee/vibe-agents-plugin",
+  "plugins": [
+    {
+      "name": "vibe-agents",
+      "version": "v2.0.60",
+      "path": "plugins/vibe-agents",
+      "installed": true,
+      "is_symlink": true,
+      "source_path": "/Users/playra/vibee/vibe-agents-plugin",
+      "description": "Queen Bee Orchestration System - 21 Professional AI Agents for Autonomous Development",
+      "installed_at": "2025-11-18T11:58:00Z"
+    }
+  ],
+  "settings": {
+    "auto_update": false,
+    "symlink_mode": true
+  }
+}

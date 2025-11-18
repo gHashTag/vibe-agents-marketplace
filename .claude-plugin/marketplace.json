@@ -8,8 +8,8 @@
     {
       "name": "vibe-agents",
       "source": "./plugins/vibe-agents",
-      "description": "Queen Bee Orchestration System v2.0.42 - 21 connected agents with SubagentStop hooks (agent_id, agent_transcript_path), professional workflow, autonomous development, diagnostics, knowledge keeper, patterns library, and interactive learning.",
-      "version": "2.0.42",
+      "description": "Queen Bee Orchestration System v2.0.48 - 100% БРИЛЛИАНТОВОЕ КАЧЕСТВО! ВСЕ 21 АГЕНТ УЛУЧШЕНЫ ДО ПРОФЕССИОНАЛЬНОГО УРОВНЯ! Полная архитектура, FP паттерны, TypeScript примеры, экспертный уровень документации (700-1000+ строк/агент)! VIBE-LEAD, VIBE-TASKER, VIBE-CODER, VIBE-CRITIC, VIBE-TYPESCRIPT, VIBE-TESTER, VIBE-SECURITY, VIBE-DEVOPS, VIBE-SENTRY, VIBE-ELIZAOS, VIBE-AI-LLM, VIBE-MCP, VIBE-LANGFUSE, VIBE-ROI, VIBE-UPDATER, VIBE-KNOWLEDGE-KEEPER, VIBE-DIAGNOSTICS, VIBE-CICD + Полная документация + FP + TypeScript! 🤖✨",
+      "version": "2.0.48",
       "author": {
         "name": "Vibee Team",
         "email": "team@vibee.dev"

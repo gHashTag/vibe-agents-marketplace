@@ -1,497 +1,994 @@
-# 🔍 VIBE-DIAGNOSTICS (Диагностика)
+# 🔍 VIBE-DIAGNOSTICS (System Diagnostics Master)
 
-**Мониторинг и телеметрия системы агентов**
-
----
-
-## 🎯 Назначение
-
-**VIBE-DIAGNOSTICS** - это специализированный агент для:
-- ✅ **Сбор телеметрии** всех операций агентов
-- ✅ **Визуализация состояния** системы
-- ✅ **Алерты** о проблемах и аномалиях
-- ✅ **Автоисправление** типовых проблем
-- ✅ **Аналитика производительности** и здоровья
-
-**Цель**: Прозрачная, наблюдаемая и самодиагностирующаяся система! 🔍
+**Мастер диагностики и мониторинга системы агентов**
 
 ---
 
-## 🏗️ Архитектура
+## 🎯 Архитектурная Роль
 
-```
-    Агенты → Сбор метрик → Аналитика → Диагностика → Исправления
-       ↓          ↓           ↓            ↓            ↓
-   Операции   Телеметрия    Модели       Алерты      Автофикс
-   Статусы    Логи         Аномалии     Уведомления  Рестарт
-   Результаты Трассировка  Тренды       Дашборд     Очистка
-```
+**VIBE-DIAGNOSTICS** - это **System Diagnostics Master**, который реализует **Advanced Telemetry**, **Anomaly Detection** и **Auto-Healing Systems** для обеспечения полной наблюдаемости и самодиагностики в системе роевого интеллекта.
+
+### 🏗️ **Comprehensive Diagnostics Framework:**
+
+**VIBE-DIAGNOSTICS** обеспечивает **полную диагностику системы** через:
+
+1. **Advanced Telemetry System** - расширенная телеметрия
+2. **Anomaly Detection Engine** - движок обнаружения аномалий
+3. **Auto-Healing Mechanisms** - механизмы самовосстановления
+4. **System Health Analysis** - анализ здоровья системы
+5. **Performance Monitoring** - мониторинг производительности
+6. **Alert Management** - система управления алертами
+7. **Real-Time Dashboard** - дашборд в реальном времени
 
 ---
 
-## 🔄 Цикл работы VIBE-DIAGNOSTICS
+## 🧠 Core Architecture
+
+### **1. Diagnostics Orchestration Engine**
 
 ```typescript
-const diagnosticsWorkflow = (): TaskEither<Error, DiagnosticsReport> => {
+import { pipe, chain, map, TaskEither } from 'fp-ts/TaskEither'
+import { z } from 'zod'
+
+interface DiagnosticsOrchestrator {
+  // Сбор телеметрии
+  collectTelemetry: (
+    sources: TelemetrySource[],
+    options: CollectionOptions
+  ) => TaskEither<Error, TelemetryData>
+
+  // Анализ метрик
+  analyzeMetrics: (
+    data: TelemetryData,
+    analysisType: AnalysisType
+  ) => TaskEither<Error, MetricsAnalysis>
+
+  // Обнаружение аномалий
+  detectAnomalies: (
+    metrics: MetricsAnalysis,
+    detectionMethod: DetectionMethod
+  ) => TaskEither<Error, Anomaly[]>
+
+  // Автоисправление
+  autoHeal: (
+    anomalies: Anomaly[],
+    constraints: HealingConstraints
+  ) => TaskEither<Error, HealingResult>
+
+  // Создание отчета
+  generateReport: (
+    analysis: DiagnosticsAnalysis,
+    format: ReportFormat
+  ) => TaskEither<Error, DiagnosticsReport>
+}
+```
+
+### **2. Advanced Telemetry System**
+
+```typescript
+// Сбор телеметрии
+const collectTelemetry = (
+  sources: TelemetrySource[],
+  options: CollectionOptions
+): TaskEither<Error, TelemetryData> => {
   return pipe(
-    // 1. Сбор метрик
-    collectAllMetrics,
+    // Подготовка источников данных
+    prepareTelemetrySources(sources),
 
-    // 2. Анализ данных
-    chainTaskEither(analyzeMetrics),
+    // Параллельный сбор данных
+    chain((prepared) => collectInParallel(prepared, options)),
 
-    // 3. Обнаружение аномалий
-    chainTaskEither(detectAnomalies),
+    // Агрегация данных
+    chain((collected) => aggregateTelemetryData(collected)),
 
-    // 4. Генерация алертов
-    chainTaskEither(generateAlerts),
+    // Валидация данных
+    chain((aggregated) => validateTelemetryData(aggregated)),
 
-    // 5. Автоисправление
-    chainTaskEither(autoFixIssues),
+    map((validated) => ({
+      agents: validated.agentMetrics,
+      system: validated.systemMetrics,
+      performance: validated.performanceMetrics,
+      security: validated.securityMetrics,
+      custom: validated.customMetrics,
+      timestamp: new Date()
+    }))
+  )
+}
 
-    // 6. Отчёт
-    mapTaskEither(generateDiagnosticsReport)
+// Типы источников телеметрии
+const telemetrySources = {
+  // Метрики агентов
+  AGENT_METRICS: 'agent_metrics',
+
+  // Системные метрики
+  SYSTEM_METRICS: 'system_metrics',
+
+  // Логи
+  LOGS: 'logs',
+
+  // Трассировка
+  TRACES: 'traces',
+
+  // Профили
+  PROFILES: 'profiles',
+
+  // Пользовательские метрики
+  CUSTOM_METRICS: 'custom_metrics'
+}
+
+// Параллельный сбор
+const collectInParallel = (
+  sources: PreparedSource[],
+  options: CollectionOptions
+): TaskEither<Error, CollectedData[]> => {
+  return right(
+    Promise.all(
+      sources.map((source) => collectFromSource(source, options))
+    )
   )
 }
 ```
 
----
-
-## 📋 Функции VIBE-DIAGNOSTICS
-
-### 1. **Сбор метрик**
+### **3. Metrics Analysis Engine**
 
 ```typescript
-const collectMetrics = async (): TaskEither<Error, MetricsData> => {
+// Анализ метрик
+const analyzeMetrics = (
+  data: TelemetryData,
+  analysisType: AnalysisType
+): TaskEither<Error, MetricsAnalysis> => {
   return pipe(
-    // Метрики агентов
-    getAgentMetrics,
+    // Базовый анализ
+    performBasicAnalysis(data),
 
-    // Метрики системы
-    combine(getSystemMetrics),
+    // Расширенный анализ
+    chain((basic) => performAdvancedAnalysis(basic, analysisType)),
 
-    // Логи ошибок
-    combine(getErrorLogs),
+    // Сравнение с базовой линией
+    chain((advanced) => compareWithBaseline(advanced)),
 
-    // Трассировка
-    combine(getTracingData),
+    // Прогнозирование
+    chain((comparison) => generateForecasts(comparison)),
 
-    // Метрики производительности
-    combine(getPerformanceMetrics),
+    map((forecasts) => ({
+      basic: forecasts.basic,
+      advanced: forecasts.advanced,
+      baseline: forecasts.baseline,
+      forecasts: forecasts.forecasts,
+      healthScore: calculateHealthScore(forecasts),
+      recommendations: generateRecommendations(forecasts)
+    }))
+  )
+}
 
-    map(([agents, system, errors, tracing, performance]) => ({
+// Базовый анализ
+const performBasicAnalysis = (
+  data: TelemetryData
+): TaskEither<Error, BasicAnalysis> => {
+  return pipe(
+    // Анализ агентов
+    analyzeAgentMetrics(data.agents),
+
+    // Анализ системы
+    analyzeSystemMetrics(data.system),
+
+    // Анализ производительности
+    analyzePerformanceMetrics(data.performance),
+
+    // Анализ безопасности
+    analyzeSecurityMetrics(data.security),
+
+    map(([agents, system, performance, security]) => ({
       agents,
       system,
-      errors,
-      tracing,
       performance,
-      timestamp: new Date().toISOString()
+      security,
+      summary: generateSummary(agents, system, performance, security)
     }))
   )
 }
-```
 
-### 2. **Анализ метрик**
+// Расширенный анализ
+const performAdvancedAnalysis = (
+  basic: BasicAnalysis,
+  type: AnalysisType
+): TaskEither<Error, AdvancedAnalysis> => {
+  switch (type) {
+    case 'TREND':
+      return analyzeTrends(basic)
 
-```typescript
-const analyzeMetrics = (metrics: MetricsData): TaskEither<Error, AnalysisResult> => {
-  return pipe(
-    // Анализируем здоровье агентов
-    analyzeAgentHealth(metrics.agents),
+    case 'CORRELATION':
+      return analyzeCorrelations(basic)
 
-    // Анализируем производительность
-    chainTaskEither(analyzePerformance(metrics.performance)),
+    case 'ANOMALY':
+      return detectAnomaliesInMetrics(basic)
 
-    // Анализируем ошибки
-    chainTaskEither(analyzeErrors(metrics.errors)),
+    case 'IMPACT':
+      return analyzeImpact(basic)
 
-    // Анализируем системные ресурсы
-    chainTaskEither(analyzeSystemResources(metrics.system)),
+    case 'PREDICTIVE':
+      return predictiveAnalysis(basic)
 
-    // Вычисляем общий скор
-    mapTaskEither((analysis) => ({
-      ...analysis,
-      healthScore: calculateHealthScore(analysis),
-      recommendations: generateRecommendations(analysis),
-      actionRequired: determineActions(analysis)
-    }))
-  )
+    default:
+      return left(new Error(`Unknown analysis type: ${type}`))
+  }
 }
 ```
 
-### 3. **Обнаружение аномалий**
+---
+
+## 🔍 Anomaly Detection Engine
+
+### **1. Multi-Method Anomaly Detection**
 
 ```typescript
-const detectAnomalies = (analysis: AnalysisResult): TaskEither<Error, Anomaly[]> => {
+// Обнаружение аномалий
+const detectAnomalies = (
+  metrics: MetricsAnalysis,
+  method: DetectionMethod
+): TaskEither<Error, Anomaly[]> => {
   return pipe(
     // Детекция по порогам
-    detectThresholdAnomalies(analysis),
+    detectThresholdAnomalies(metrics),
+
+    // Статистическая детекция
+    chain((threshold) => detectStatisticalAnomalies(metrics, threshold)),
 
     // Детекция по трендам
-    combine(detectTrendAnomalies(analysis)),
+    chain((statistical) => detectTrendAnomalies(metrics, statistical)),
 
-    // Детекция по корреляциям
-    combine(detectCorrelationAnomalies(analysis)),
+    // Машинное обучение
+    chain((trend) => detectMLAnomalies(metrics, trend)),
 
-    // Машинное обучение (простая модель)
-    combine(detectMLAnomalies(analysis)),
+    map((ml) => deduplicateAndRank(ml))
+  )
+}
 
-    map(([threshold, trends, correlations, ml]) => {
-      const allAnomalies = [...threshold, ...trends, ...correlations, ...ml]
+// Детекция по порогам
+const detectThresholdAnomalies = (
+  metrics: MetricsAnalysis
+): TaskEither<Error, Anomaly[]> => {
+  const anomalies: Anomaly[] = []
 
-      // Убираем дубликаты и сортируем по серьёзности
-      return allAnomalies
-        .sort((a, b) => b.severity - a.severity)
-        .slice(0, 50) // Топ-50 аномалий
+  // Проверка агентов
+  metrics.agents.forEach((agent) => {
+    // Высокая загрузка CPU
+    if (agent.cpuUsage > thresholds.cpu.critical) {
+      anomalies.push({
+        type: 'threshold',
+        severity: 'critical',
+        category: 'performance',
+        metric: 'cpu_usage',
+        value: agent.cpuUsage,
+        threshold: thresholds.cpu.critical,
+        description: `Agent ${agent.name} CPU usage is ${agent.cpuUsage}%`,
+        agentId: agent.id,
+        timestamp: new Date()
+      })
+    }
+
+    // Высокая память
+    if (agent.memoryUsage > thresholds.memory.critical) {
+      anomalies.push({
+        type: 'threshold',
+        severity: 'critical',
+        category: 'performance',
+        metric: 'memory_usage',
+        value: agent.memoryUsage,
+        threshold: thresholds.memory.critical,
+        description: `Agent ${agent.name} memory usage is ${agent.memoryUsage}%`,
+        agentId: agent.id,
+        timestamp: new Date()
+      })
+    }
+
+    // Много ошибок
+    if (agent.errorRate > thresholds.errorRate.warning) {
+      anomalies.push({
+        type: 'threshold',
+        severity: agent.errorRate > thresholds.errorRate.critical ? 'critical' : 'warning',
+        category: 'reliability',
+        metric: 'error_rate',
+        value: agent.errorRate,
+        threshold: thresholds.errorRate.warning,
+        description: `Agent ${agent.name} error rate is ${agent.errorRate}%`,
+        agentId: agent.id,
+        timestamp: new Date()
+      })
+    }
+  })
+
+  // Проверка системы
+  if (metrics.system.cpu.usage > thresholds.system.cpu.critical) {
+    anomalies.push({
+      type: 'threshold',
+      severity: 'critical',
+      category: 'performance',
+      metric: 'system_cpu',
+      value: metrics.system.cpu.usage,
+      threshold: thresholds.system.cpu.critical,
+      description: `System CPU usage is ${metrics.system.cpu.usage}%`,
+      timestamp: new Date()
+    })
+  }
+
+  return right(anomalies)
+}
+
+// Статистическая детекция
+const detectStatisticalAnomalies = (
+  metrics: MetricsAnalysis,
+  existing: Anomaly[]
+): TaskEither<Error, Anomaly[]> => {
+  const statisticalAnomalies: Anomaly[] = []
+
+  // Z-score анализ
+  metrics.agents.forEach((agent) => {
+    const zScore = calculateZScore(
+      agent.responseTime,
+      metrics.baseline.responseTime.mean,
+      metrics.baseline.responseTime.stdDev
+    )
+
+    if (Math.abs(zScore) > 3) {
+      statisticalAnomalies.push({
+        type: 'statistical',
+        severity: 'warning',
+        category: 'performance',
+        metric: 'response_time',
+        value: agent.responseTime,
+        zScore,
+        description: `Agent ${agent.name} response time is anomalous (z-score: ${zScore})`,
+        agentId: agent.id,
+        timestamp: new Date()
+      })
+    }
+  })
+
+  // IQR анализ
+  const iqrAnomalies = detectIQROutliers(metrics.performance.throughput)
+  statisticalAnomalies.push(...iqrAnomalies)
+
+  return right(statisticalAnomalies)
+}
+```
+
+### **2. Machine Learning Anomaly Detection**
+
+```typescript
+// ML детекция аномалий
+const detectMLAnomalies = (
+  metrics: MetricsAnalysis,
+  existing: Anomaly[]
+): TaskEither<Error, Anomaly[]> => {
+  return pipe(
+    // Извлечение признаков
+    extractFeatures(metrics),
+
+    // Isolation Forest
+    chain((features) => runIsolationForest(features)),
+
+    // LSTM автоэнкодер
+    chain((isolationResults) => runLSTMAutoencoder(features, isolationResults)),
+
+    // Ансамбль
+    chain(([isolation, lstm]) => ensembleResults([isolation, lstm])),
+
+    map((ensemble) => ensemble.map((score, idx) => ({
+      type: 'ml',
+      severity: score.confidence > 0.8 ? 'critical' : 'warning',
+      category: 'anomaly',
+      metric: 'ensemble_score',
+      value: score.score,
+      confidence: score.confidence,
+      description: `ML anomaly detected with confidence ${score.confidence}`,
+      timestamp: new Date()
+    })))
+  )
+}
+
+// Извлечение признаков
+const extractFeatures = (
+  metrics: MetricsAnalysis
+): TaskEither<Error, FeatureVector[]> => {
+  return right(
+    metrics.agents.map((agent) => ({
+      cpu: agent.cpuUsage,
+      memory: agent.memoryUsage,
+      responseTime: agent.responseTime,
+      errorRate: agent.errorRate,
+      throughput: agent.throughput,
+      // Временные признаки
+      hour: new Date().getHours(),
+      dayOfWeek: new Date().getDay(),
+      // Статистические признаки
+      cpuMean: metrics.baseline.cpu.mean,
+      cpuStd: metrics.baseline.cpu.stdDev,
+      memoryMean: metrics.baseline.memory.mean,
+      memoryStd: metrics.baseline.memory.stdDev
+    }))
+  )
+}
+```
+
+---
+
+## 🔧 Auto-Healing Mechanisms
+
+### **1. Intelligent Auto-Healing**
+
+```typescript
+// Автоисправление
+const autoHeal = (
+  anomalies: Anomaly[],
+  constraints: HealingConstraints
+): TaskEither<Error, HealingResult> => {
+  return pipe(
+    // Фильтрация исправляемых аномалий
+    filterHealableAnomalies(anomalies, constraints),
+
+    // Группировка по типу
+    chain((healable) => groupByHealingType(healable)),
+
+    // Параллельное исправление
+    chain((grouped) => executeHealing(grouped, constraints)),
+
+    // Валидация результатов
+    chain((results) => validateHealingResults(results)),
+
+    map((validated) => ({
+      totalAnomalies: anomalies.length,
+      healable: validated.healable.length,
+      healed: validated.success.length,
+      failed: validated.failed.length,
+      actions: validated.actions
+    }))
+  )
+}
+
+// Типы исправлений
+const healingStrategies = {
+  // Перезапуск агента
+  RESTART_AGENT: 'restart_agent',
+
+  // Очистка кеша
+  CLEAR_CACHE: 'clear_cache',
+
+  // Переподключение к сервису
+  RECONNECT_SERVICE: 'reconnect_service',
+
+  // Увеличение ресурсов
+  SCALE_RESOURCES: 'scale_resources',
+
+  // Перезапуск сервиса
+  RESTART_SERVICE: 'restart_service',
+
+  // Очистка логов
+  CLEAN_LOGS: 'clean_logs',
+
+  // Оптимизация БД
+  OPTIMIZE_DATABASE: 'optimize_database',
+
+  // Перезапуск всех агентов
+  RESTART_ALL_AGENTS: 'restart_all_agents'
+}
+
+// Исполнение исправлений
+const executeHealing = (
+  grouped: Record<string, Anomaly[]>,
+  constraints: HealingConstraints
+): TaskEither<Error, HealingAction[]> => {
+  const actions: HealingAction[] = []
+
+  return right(
+    Promise.all(
+      Object.entries(grouped).map(async ([type, anomalies]) => {
+        switch (type) {
+          case 'restart_agent':
+            return await healRestartAgents(anomalies, constraints)
+
+          case 'clear_cache':
+            return await healClearCache(anomalies, constraints)
+
+          case 'reconnect_service':
+            return await healReconnectServices(anomalies, constraints)
+
+          case 'scale_resources':
+            return await healScaleResources(anomalies, constraints)
+
+          default:
+            return {
+              type,
+              success: false,
+              error: `Unknown healing type: ${type}`
+            }
+        }
+      })
+    ).then((results) => results.flat())
+  )
+}
+
+// Перезапуск агентов
+const healRestartAgents = async (
+  anomalies: Anomaly[],
+  constraints: HealingConstraints
+): Promise<HealingAction[]> => {
+  const actions: HealingAction[] = []
+
+  for (const anomaly of anomalies) {
+    if (!anomaly.agentId) continue
+
+    try {
+      // Проверка ограничений
+      if (constraints.maxRestartsPerHour[anomaly.agentId] >= constraints.maxRestarts) {
+        actions.push({
+          type: 'restart_agent',
+          agentId: anomaly.agentId,
+          success: false,
+          error: 'Max restarts exceeded'
+        })
+        continue
+      }
+
+      // Перезапуск агента
+      await restartAgent(anomaly.agentId)
+
+      // Обновление счетчика
+      constraints.maxRestartsPerHour[anomaly.agentId]++
+
+      actions.push({
+        type: 'restart_agent',
+        agentId: anomaly.agentId,
+        success: true,
+        description: `Agent ${anomaly.agentId} restarted successfully`
+      })
+    } catch (error) {
+      actions.push({
+        type: 'restart_agent',
+        agentId: anomaly.agentId,
+        success: false,
+        error: error.message
+      })
+    }
+  }
+
+  return actions
+}
+```
+
+### **2. Healing Validation**
+
+```typescript
+// Валидация результатов исправления
+const validateHealingResults = (
+  actions: HealingAction[]
+): TaskEither<Error, ValidationResult> => {
+  return pipe(
+    // Ожидание стабилизации
+    waitForStabilization(actions, 5000),
+
+    // Повторный сбор метрик
+    chain(() => collectCurrentMetrics()),
+
+    // Проверка улучшений
+    chain((currentMetrics) => verifyImprovements(actions, currentMetrics)),
+
+    map((verification) => ({
+      healable: actions.length,
+      success: actions.filter(a => a.success).length,
+      failed: actions.filter(a => !a.success).length,
+      actions: actions,
+      verification
+    }))
+  )
+}
+```
+
+---
+
+## 📊 System Health Analysis
+
+### **1. Health Score Calculation**
+
+```typescript
+// Расчет здоровья системы
+const calculateHealthScore = (
+  analysis: MetricsAnalysis
+): HealthScore => {
+  // Веса категорий
+  const weights = {
+    agents: 0.35,
+    performance: 0.25,
+    system: 0.20,
+    security: 0.15,
+    custom: 0.05
+  }
+
+  // Подсчет баллов
+  const agentScore = calculateAgentHealthScore(analysis.agents)
+  const performanceScore = calculatePerformanceScore(analysis.performance)
+  const systemScore = calculateSystemHealthScore(analysis.system)
+  const securityScore = calculateSecurityScore(analysis.security)
+  const customScore = calculateCustomScore(analysis.custom)
+
+  // Взвешенное среднее
+  const weightedScore =
+    agentScore * weights.agents +
+    performanceScore * weights.performance +
+    systemScore * weights.system +
+    securityScore * weights.security +
+    customScore * weights.custom
+
+  return {
+    overall: Math.round(weightedScore),
+    components: {
+      agents: Math.round(agentScore),
+      performance: Math.round(performanceScore),
+      system: Math.round(systemScore),
+      security: Math.round(securityScore),
+      custom: Math.round(customScore)
+    },
+    grade: getHealthGrade(weightedScore),
+    timestamp: new Date()
+  }
+}
+
+// Оценка здоровья агентов
+const calculateAgentHealthScore = (
+  agents: AgentMetric[]
+): number => {
+  if (agents.length === 0) return 100
+
+  const scores = agents.map((agent) => {
+    let score = 100
+
+    // Штраф за ошибки
+    score -= agent.errorRate * 2
+
+    // Штраф за высокую загрузку
+    if (agent.cpuUsage > 80) score -= 10
+    if (agent.memoryUsage > 80) score -= 10
+
+    // Штраф за низкую производительность
+    if (agent.responseTime > 1000) score -= 15
+
+    // Штраф за нестабильность
+    score -= agent.instabilityScore || 0
+
+    return Math.max(0, Math.min(100, score))
+  })
+
+  return scores.reduce((sum, score) => sum + score, 0) / scores.length
+}
+```
+
+### **2. Trend Analysis**
+
+```typescript
+// Анализ трендов
+const analyzeTrends = (
+  metrics: MetricsAnalysis,
+  timeRange: TimeRange
+): TaskEither<Error, TrendAnalysis> => {
+  return right({
+    // Восходящие тренды
+    upward: {
+      cpu: detectUpwardTrend(metrics.system.cpu.usage, timeRange),
+      memory: detectUpwardTrend(metrics.system.memory.usage, timeRange),
+      errorRate: detectUpwardTrend(metrics.performance.errorRate, timeRange)
+    },
+
+    // Нисходящие тренды
+    downward: {
+      performance: detectDownwardTrend(metrics.performance.throughput, timeRange),
+      availability: detectDownwardTrend(metrics.performance.availability, timeRange)
+    },
+
+    // Сезонность
+    seasonality: detectSeasonality(metrics, timeRange),
+
+    // Прогнозы
+    forecasts: generateTrendForecasts(metrics, timeRange),
+
+    // Рекомендации
+    recommendations: generateTrendRecommendations(metrics)
+  })
+}
+```
+
+---
+
+## 📈 Performance Monitoring
+
+### **1. Performance Metrics Collection**
+
+```typescript
+// Сбор метрик производительности
+const collectPerformanceMetrics = (
+  timeRange: TimeRange
+): TaskEither<Error, PerformanceMetrics> => {
+  return pipe(
+    // Время отклика
+    collectResponseTimeMetrics(timeRange),
+
+    // Пропускная способность
+    chain((responseTime) => collectThroughputMetrics(timeRange)),
+
+    // Частота ошибок
+    chain((throughput) => collectErrorRateMetrics(timeRange)),
+
+    // Доступность
+    chain((errorRate) => collectAvailabilityMetrics(timeRange)),
+
+    map(([responseTime, throughput, errorRate, availability]) => ({
+      responseTime,
+      throughput,
+      errorRate,
+      availability,
+      calculatedAt: new Date()
+    }))
+  )
+}
+
+// Метрики времени отклика
+const collectResponseTimeMetrics = (
+  timeRange: TimeRange
+): TaskEither<Error, ResponseTimeMetrics> => {
+  return right({
+    average: calculateAverageResponseTime(timeRange),
+    median: calculateMedianResponseTime(timeRange),
+    p95: calculatePercentileResponseTime(timeRange, 0.95),
+    p99: calculatePercentileResponseTime(timeRange, 0.99),
+    min: calculateMinResponseTime(timeRange),
+    max: calculateMaxResponseTime(timeRange),
+    trend: calculateResponseTimeTrend(timeRange)
+  })
+}
+```
+
+### **2. SLA/SLO Monitoring**
+
+```typescript
+// Мониторинг SLA/SLO
+const monitorSLAs = (
+  metrics: PerformanceMetrics,
+  slaDefinitions: SLADefinition[]
+): TaskEither<Error, SLAStatus[]> => {
+  return right(
+    slaDefinitions.map((sla) => {
+      const status = checkSLACompliance(sla, metrics)
+
+      return {
+        name: sla.name,
+        metric: sla.metric,
+        target: sla.target,
+        current: getCurrentValue(metrics, sla.metric),
+        status: status.status,
+        compliance: status.compliance,
+        breachProbability: status.breachProbability,
+        timeToBreach: status.timeToBreach
+      }
     })
   )
 }
-```
 
-### 4. **Генерация алертов**
+// Проверка соответствия SLA
+const checkSLACompliance = (
+  sla: SLADefinition,
+  metrics: PerformanceMetrics
+): SLACompliance => {
+  const currentValue = getCurrentValue(metrics, sla.metric)
+  const threshold = sla.threshold
 
-```typescript
-const generateAlerts = (anomalies: Anomaly[]): TaskEither<Error, Alert[]> => {
-  return pipe(
-    // Фильтруем критичные аномалии
-    anomalies.filter(a => a.severity >= 7),
+  let status: 'healthy' | 'warning' | 'breached'
+  let compliance = 100
 
-    // Группируем по категориям
-    mapTaskEither(groupByCategory),
-
-    // Создаём алерты
-    mapTaskEither((groups) => {
-      return Object.entries(groups).flatMap(([category, items]) => {
-        return items.map(item => ({
-          id: generateAlertId(),
-          category,
-          severity: item.severity,
-          title: generateAlertTitle(item),
-          description: item.description,
-          metric: item.metric,
-          value: item.value,
-          threshold: item.threshold,
-          timestamp: new Date().toISOString(),
-          actions: suggestActions(item)
-        }))
-      })
-    }),
-
-    // Сортируем по приоритету
-    mapTaskEither(alerts => alerts.sort((a, b) => b.severity - a.severity))
-  )
-}
-```
-
-### 5. **Автоисправление**
-
-```typescript
-const autoFixIssues = (alerts: Alert[]): TaskEither<Error, FixReport> => {
-  return pipe(
-    // Фильтруем аномалии, которые можно исправить автоматически
-    alerts.filter(a => a.actions.autoFix === true),
-
-    // Группируем по типу проблемы
-    mapTaskEither(groupByFixType),
-
-    // Применяем исправления
-    chainTaskEither(async (grouped) => {
-      const results = []
-
-      for (const [fixType, issues] of Object.entries(grouped)) {
-        switch (fixType) {
-          case 'memory':
-            results.push(...await fixMemoryIssues(issues))
-            break
-          case 'database':
-            results.push(...await fixDatabaseIssues(issues))
-            break
-          case 'agent_restart':
-            results.push(...await restartAgents(issues))
-            break
-          case 'cache_clear':
-            results.push(...await clearCache(issues))
-            break
-          case 'connection':
-            results.push(...await reconnectServices(issues))
-            break
-        }
-      }
-
-      return right(results)
-    }),
-
-    // Генерируем отчёт
-    mapTaskEither((fixes) => ({
-      totalIssues: alerts.length,
-      autoFixed: fixes.length,
-      failed: fixes.filter(f => !f.success),
-      details: fixes
-    }))
-  )
-}
-```
-
----
-
-## 🔍 Типы диагностики
-
-### 1. **Агенты**
-```typescript
-interface AgentMetrics {
-  id: string
-  status: 'idle' | 'busy' | 'error' | 'restarting'
-  tasksCompleted: number
-  tasksFailed: number
-  averageTaskDuration: number
-  loadPercentage: number
-  memoryUsage: number
-  lastActivity: string
-  errors: ErrorInfo[]
-}
-```
-
-### 2. **Система**
-```typescript
-interface SystemMetrics {
-  cpu: {
-    usage: number
-    loadAverage: number[]
+  if (sla.type === 'upper') {
+    if (currentValue <= threshold.warning) {
+      status = 'healthy'
+    } else if (currentValue <= threshold.breach) {
+      status = 'warning'
+      compliance = 100 - ((currentValue - threshold.warning) / (threshold.breach - threshold.warning)) * 10
+    } else {
+      status = 'breached'
+      compliance = 0
+    }
+  } else {
+    // lower threshold
+    if (currentValue >= threshold.warning) {
+      status = 'healthy'
+    } else if (currentValue >= threshold.breach) {
+      status = 'warning'
+      compliance = 100 - ((threshold.warning - currentValue) / (threshold.warning - threshold.breach)) * 10
+    } else {
+      status = 'breached'
+      compliance = 0
+    }
   }
-  memory: {
-    used: number
-    total: number
-    percentage: number
-  }
-  disk: {
-    used: number
-    total: number
-    percentage: number
-  }
-  network: {
-    bytesIn: number
-    bytesOut: number
-    connections: number
-  }
-}
-```
 
-### 3. **Производительность**
-```typescript
-interface PerformanceMetrics {
-  responseTime: {
-    average: number
-    p95: number
-    p99: number
-  }
-  throughput: {
-    requestsPerSecond: number
-    tasksPerMinute: number
-  }
-  errorRate: {
-    percentage: number
-    count: number
-  }
-  availability: {
-    uptime: number
-    downtime: number
-  }
-}
-```
-
----
-
-## 📊 Веб-интерфейс
-
-### Дашборд в реальном времени:
-```typescript
-const createDashboard = (): Dashboard => {
   return {
-    // Общий статус
-    overall: {
-      healthScore: 0-100,
-      status: 'healthy' | 'warning' | 'critical',
-      uptime: string
-    },
-
-    // Метрики агентов
-    agents: {
-      total: number,
-      active: number,
-      idle: number,
-      error: number,
-      list: AgentCard[]
-    },
-
-    // Системные ресурсы
-    resources: {
-      cpu: Gauge,
-      memory: Gauge,
-      disk: Gauge
-    },
-
-    // Графики
-    charts: {
-      responseTime: TimeSeriesChart,
-      errorRate: TimeSeriesChart,
-      throughput: TimeSeriesChart
-    },
-
-    // Последние алерты
-    alerts: AlertCard[]
+    status,
+    compliance,
+    breachProbability: calculateBreachProbability(currentValue, threshold, metrics),
+    timeToBreach: estimateTimeToBreach(currentValue, threshold, metrics)
   }
 }
 ```
 
-### Пример виджета:
-```html
-<!-- Агент статус карточка -->
-<div class="agent-card">
-  <div class="agent-header">
-    <h3>VIBE-CODER</h3>
-    <span class="status idle">🟢 Idle</span>
-  </div>
-  <div class="agent-metrics">
-    <div class="metric">
-      <label>Задач выполнено:</label>
-      <span>156</span>
-    </div>
-    <div class="metric">
-      <label>Загрузка:</label>
-      <span>45%</span>
-    </div>
-    <div class="metric">
-      <label>Память:</label>
-      <span>128 MB</span>
-    </div>
-  </div>
-</div>
-```
-
 ---
 
-## 🔔 Система алертов
+## 🔔 Alert Management System
 
-### Типы алертов:
+### **1. Intelligent Alert Routing**
+
 ```typescript
-type AlertType =
-  | 'critical'    // Критично - требует немедленного внимания
-  | 'warning'     // Предупреждение - нужно исправить
-  | 'info'        // Информация - для мониторинга
+// Управление алертами
+const manageAlerts = (
+  anomalies: Anomaly[],
+  config: AlertConfig
+): TaskEither<Error, Alert[]> => {
+  return pipe(
+    // Фильтрация значимых аномалий
+    filterSignificantAnomalies(anomalies, config.thresholds),
 
-interface Alert {
-  id: string
-  type: AlertType
-  category: 'agent' | 'system' | 'performance' | 'security'
-  title: string
-  description: string
-  metric: string
-  value: number
-  threshold: number
-  timestamp: string
-  actions: {
-    autoFix: boolean
-    manual: string[]
-  }
+    // Группировка по серьезности
+    chain((significant) => groupBySeverity(significant)),
+
+    // Генерация алертов
+    chain((grouped) => generateAlertsFromAnomalies(grouped)),
+
+    // Маршрутизация
+    chain((alerts) => routeAlerts(alerts, config.routing)),
+
+    // Подавление дубликатов
+    map((routed) => deduplicateAlerts(routed))
+  )
+}
+
+// Генерация алертов
+const generateAlertsFromAnomalies = (
+  anomalies: Record<string, Anomaly[]>
+): TaskEither<Error, Alert[]> => {
+  const alerts: Alert[] = []
+
+  Object.entries(anomalies).forEach(([severity, anomalyList]) => {
+    anomalyList.forEach((anomaly) => {
+      alerts.push({
+        id: generateAlertId(),
+        severity: severity as AlertSeverity,
+        category: anomaly.category,
+        title: generateAlertTitle(anomaly),
+        description: anomaly.description,
+        metric: anomaly.metric,
+        value: anomaly.value,
+        threshold: anomaly.threshold,
+        timestamp: anomaly.timestamp,
+        source: anomaly.agentId || 'system',
+        actions: generateRecommendedActions(anomaly),
+        escalation: determineEscalationPath(anomaly),
+        dedupeKey: generateDedupeKey(anomaly)
+      })
+    })
+  })
+
+  return right(alerts)
 }
 ```
 
-### Каналы уведомлений:
-- 📧 Email
-- 💬 Slack/Telegram
-- 🔔 Webhook
-- 📱 Push-уведомления
-- 📊 Grafana
+### **2. Alert Correlation**
 
----
-
-## 🛠️ Интеграция
-
-### В коде агента:
 ```typescript
-import { withTelemetry } from '@vibe-agents/diagnostics'
+// Корреляция алертов
+const correlateAlerts = (
+  alerts: Alert[],
+  timeWindow: number
+): TaskEither<Error, CorrelatedAlert[]> => {
+  const correlations: CorrelatedAlert[] = []
 
-const myAgent = withTelemetry({
-  name: 'VIBE-CODER',
-  version: '1.0.0'
-})(async (task: Task) => {
-  // Ваша логика
-  const result = await processTask(task)
+  // Группировка по времени
+  const timeGroups = groupAlertsByTime(alerts, timeWindow)
 
-  // Метрики собираются автоматически
-  return result
-})
-```
+  timeGroups.forEach((group) => {
+    // Корреляция по общей причине
+    const rootCause = findRootCause(group)
 
-### Настройка алертов:
-```typescript
-import { configureAlerts } from '@vibe-agents/diagnostics'
+    if (rootCause) {
+      correlations.push({
+        id: generateCorrelationId(),
+        rootCause,
+        alerts: group,
+        impact: assessImpact(group),
+        recommendedAction: generateRootCauseAction(rootCause)
+      })
+    } else {
+      // Несколько независимых проблем
+      correlations.push({
+        id: generateCorrelationId(),
+        rootCause: null,
+        alerts: group,
+        impact: assessImpact(group),
+        recommendedAction: 'Investigate each alert separately'
+      })
+    }
+  })
 
-configureAlerts({
-  thresholds: {
-    'agent.errors': { warning: 5, critical: 10 },
-    'system.memory': { warning: 80, critical: 90 },
-    'performance.response_time': { warning: 1000, critical: 5000 }
-  },
-  channels: {
-    critical: ['email', 'slack', 'webhook'],
-    warning: ['slack'],
-    info: ['webhook']
-  }
-})
+  return right(correlations)
+}
 ```
 
 ---
 
-## 📈 Метрики и KPI
+## 🔄 Version 2.0.48+ Features
 
-### Ключевые метрики:
-- **Health Score** (0-100) - общее здоровье системы
-- **Uptime** - время доступности
-- **Error Rate** - процент ошибок
-- **Response Time** - время отклика
-- **Throughput** - пропускная способность
-- **Resource Usage** - использование ресурсов
+### **Новое в v2.0.48:**
+- ✅ **Advanced ML Anomaly Detection** - ML обнаружение аномалий
+- ✅ **Intelligent Auto-Healing** - интеллектуальное самовосстановление
+- ✅ **Predictive Health Analysis** - предиктивный анализ здоровья
+- ✅ **SLA/SLO Monitoring** - мониторинг SLA/SLO
+- ✅ **Alert Correlation Engine** - движок корреляции алертов
+- ✅ **Real-Time Dashboards** - дашборды в реальном времени
 
-### Цели (SLO):
-- **Availability**: 99.9%
-- **Response Time**: < 1s (p95)
-- **Error Rate**: < 1%
-- **Health Score**: > 90
-
----
-
-## 🎯 Лучшие Практики
-
-### Мониторинг:
-1. **Собирайте метрики** всех агентов
-2. **Настройте алерты** на критичные события
-3. **Используйте** автоисправление где возможно
-4. **Регулярно проверяйте** дашборд
-5. **Ведите журнал** изменений
-
-### Алерты:
-1. **Не спамьте** - только критичные события
-2. **Группируйте** похожие алерты
-3. **Используйте** эскалацию для критичных проблем
-4. **Тестируйте** каналы уведомлений
-5. **Документируйте** процедуры реакции
-
-### Производительность:
-1. **Оптимизируйте** сбор метрик
-2. **Используйте** агрегацию для долгосрочных данных
-3. **Настройте** retention политику
-4. **Индексируйте** метрики для быстрого поиска
-5. **Архивируйте** старые данные
+### **v2.0.49 Planned Features:**
+- 🔄 **AI-Powered Diagnostics** - AI диагностика
+- 🔄 **Self-Optimizing System** - самооптимизирующаяся система
+- 🔄 **Chaos Engineering** - инженерия хаоса
+- 🔄 **Distributed Tracing** - распределенная трассировка
+- 🔄 **Automated Remediation** - автоматическое исправление
 
 ---
 
-## 🚀 Заключение
+## 💡 Best Practices
 
-**VIBE-DIAGNOSTICS** делает систему прозрачной и управляемой. Вы всегда знаете, что происходит, и можете быстро реагировать на проблемы.
+### **1. Telemetry Collection**
+- ✅ **Minimal Overhead** - минимальные накладные расходы
+- ✅ **High Cardinality** - высокая кардинальность метрик
+- ✅ **Structured Logging** - структурированные логи
+- ✅ **Sampling Strategy** - стратегия сэмплинга
+- ✅ **Context Preservation** - сохранение контекста
 
-**Результат**: 100% наблюдаемость + автоисправление + проактивный мониторинг! 📊🔍
+### **2. Anomaly Detection**
+- ✅ **Multi-Method Approach** - многометодный подход
+- ✅ **Baseline Establishment** - установление базовой линии
+- ✅ **False Positive Reduction** - снижение ложных срабатываний
+- ✅ **Adaptive Thresholds** - адаптивные пороги
+- ✅ **Continuous Learning** - непрерывное обучение
+
+### **3. Auto-Healing**
+- ✅ **Safe Defaults** - безопасные значения по умолчанию
+- ✅ **Rollback Capability** - возможность отката
+- ✅ **Validation Checks** - проверки валидности
+- ✅ **Rate Limiting** - ограничение частоты
+- ✅ **Human Oversight** - человеческий контроль
+
+### **4. Alerting**
+- ✅ **Actionable Alerts** - алерты требующие действий
+- ✅ **Proper Severity** - правильная серьезность
+- ✅ **Alert Fatigue Prevention** - предотвращение усталости от алертов
+- ✅ **Escalation Paths** - пути эскалации
+- ✅ **Clear Documentation** - четкая документация
 
 ---
 
-*VIBE-DIAGNOSTICS: Видимость, контроль и забота о системе! 🔍✨*
+## 🎓 Professional Competencies
+
+### **Core Expertise:**
+1. **System Diagnostics** - системная диагностика
+2. **Anomaly Detection** - обнаружение аномалий
+3. **Performance Monitoring** - мониторинг производительности
+4. **Auto-Healing Systems** - системы самовосстановления
+5. **Observability Engineering** - инженерия наблюдаемости
+
+### **Technical Skills:**
+- **Telemetry & Metrics** - телеметрия и метрики
+- **Statistical Analysis** - статистический анализ
+- **Machine Learning** - машинное обучение
+- **Time Series Analysis** - анализ временных рядов
+- **SLI/SLO/SLA** - индикаторы уровня обслуживания
+- **Alerting Systems** - системы оповещений
+- **Distributed Systems** - распределенные системы
+
+---
+
+*VIBE-DIAGNOSTICS: Превращаем данные в диагноз! 🔍✨*
+
+**System Diagnostics Master - От проблем к решениям! 🚀⚡**

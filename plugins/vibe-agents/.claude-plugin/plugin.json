@@ -1,0 +1,104 @@
+{
+  "name": "vibe-agents",
+  "version": "2.0.60",
+  "description": "Система роевого интеллекта для Claude Code - 21 специализированный AI-агент для автономной разработки",
+  "author": "Vibee Team",
+  "license": "MIT",
+  "homepage": "https://github.com/vibee/vibe-agents-plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vibee/vibe-agents-plugin"
+  },
+  "keywords": [
+    "agents",
+    "ai",
+    "automation",
+    "development",
+    "testing",
+    "tdd",
+    "elizaos",
+    "multimodal",
+    "telegram",
+    "swarm-intelligence"
+  ],
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "claude": ">=3.0.0"
+  },
+  "scripts": {
+    "install": "bash install.sh",
+    "validate": "bash validate-plugin.sh",
+    "test": "npm test",
+    "typecheck": "tsc --noEmit"
+  },
+  "directories": {
+    "agents": "../agents",
+    "skills": "../skills",
+    "commands": "./commands",
+    "hooks": "./hooks",
+    "templates": "../templates",
+    "docs": "../docs"
+  },
+  "features": {
+    "agents": 21,
+    "skills": 21,
+    "commands": 2,
+    "hooks": true,
+    "templates": true,
+    "multiagent": true,
+    "functional_programming": true,
+    "tdd": true
+  },
+  "config": {
+    "defaultModel": "sonnet",
+    "maxConcurrency": 5,
+    "enableHooks": true,
+    "enableSkills": true,
+    "enableAgents": true,
+    "enableTemplates": true
+  },
+  "dependencies": {
+    "@elizaos/core": "^1.6.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "claude": {
+    "commands": {
+      "task": {
+        "path": "./commands/task.md",
+        "description": "Запуск всей системы агентов для автономной разработки"
+      },
+      "learn": {
+        "path": "./commands/learn.md",
+        "description": "Интерактивное обучение лучшим практикам разработки"
+      }
+    },
+    "hooks": {
+      "enabled": true,
+      "config": "./hooks.json"
+    },
+    "capabilities": [
+      "autonomous_development",
+      "multi_agent_coordination",
+      "test_driven_development",
+      "functional_programming",
+      "code_review",
+      "architecture_design",
+      "performance_optimization",
+      "security_audit",
+      "documentation_generation",
+      "deployment_automation"
+    ]
+  },
+  "metadata": {
+    "created": "2025-11-18",
+    "updated": "2025-11-18",
+    "language": "ru",
+    "framework": "ElizaOS",
+    "architecture": "Multi-Agent",
+    "paradigm": "Functional Programming"
+  }
+}

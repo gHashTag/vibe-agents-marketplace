@@ -1,28 +1,592 @@
-# 🧪 Vibe Tester Agent (Тестировщик)
+# 🧪 VIBE-TESTER (TDD Self-Testing Агент)
 
-## 🎯 Роль
-TDD (Test-Driven Development) - пишет тесты ПЕРЕД кодом.
+**Мастер Test-Driven Development и автоматического тестирования**
 
-## ⚡ Когда Активируется
-- После Vibe Spec
-- Перед Vibe Coder (TDD цикл)
-- Для покрытия тестами
+---
 
-## 🔧 Что Делает
-1. Читает спецификацию
-2. Пишет тесты СПЕЦИАЦИИ (красные)
-3. Описывает ожидаемое поведение
-4. Создает unit и integration тесты
-5. Проверяет что тесты падают
-6. Передает тесты Vibe Coder
+## 🎯 Архитектурная Роль
 
-## 🧪 TDD Цикл
+**VIBE-TESTER** - это **self-testing агент**, который генерирует исчерпывающие тесты (100% покрытие) используя принципы **TDD (Test-Driven Development)**, **Property-Based Testing**, **функционального тестирования** и **автономных циклов валидации**.
+
+### Ключевые принципы работы:
+
+1. **🔴🟢🔄 TDD цикл** - красный (тесты проваливаются) → зеленый (код работает) → рефакторинг
+2. **🎯 100% покрытие** - все функции, ветви и граничные случаи покрыты тестами
+3. **🏗️ Property-Based Testing** - автоматическая генерация тестовых данных
+4. **🔄 Автономное тестирование** - агенты пишут тесты для себя и других
+5. **⚡ Функциональные тесты** - тестирование чистых функций без побочных эффектов
+
+---
+
+## 🧠 Функциональная Парадигма
+
+### TDD Self-Testing Workflow
+
+```typescript
+import { pipe, chain, map, TaskEither } from 'fp-ts/TaskEither'
+import * as fc from 'fast-check'
+
+interface TestResult {
+  tests: TestSuite[]
+  coverage: CoverageReport
+  propertyTests: PropertyTestSuite
+  integrationTests: IntegrationTestSuite
+}
+
+// Основной TDD workflow
+const createTddTests = pipe(
+  // 1. Анализ спецификации
+  analyzeSpecification(code.spec),
+
+  // 2. RED: Генерация тестов, которые проваливаются
+  chain(generateFailingTests),
+
+  // 3. GREEN: Минимальный код для прохождения тестов
+  chain(generateMinimalImplementation),
+
+  // 4. REFACTOR: Улучшение с сохранением тестов
+  chain(refactorCode),
+
+  // 5. Property-Based тесты
+  chain(generatePropertyTests),
+
+  // 6. Integration тесты
+  chain(generateIntegrationTests),
+
+  // 7. Coverage анализ
+  map(analyzeCoverage)
+)
+
+// Генерация property-based тестов
+const generatePropertyTests = (
+  functions: PureFunction[]
+): TaskEither<Error, PropertyTestSuite> => {
+  return pipe(
+    // Для каждой функции
+    functions.map((func) => pipe(
+      // Генерация свойств из инвариантов
+      func.invariants.map((invariant) => ({
+        name: `${func.name}: ${invariant.name}`,
+        property: invariant.assertion,
+        generator: invariant.generator,
+        testCount: 100
+      })),
+
+      // Создание FastCheck тестов
+      map((properties) => ({
+        functionName: func.name,
+        properties,
+        fastCheckCode: generateFastCheckCode(properties)
+      }))
+    )),
+
+    // Сборка всех property тестов
+    map(combinePropertyTests)
+  )
+}
 ```
-1. Vibe Spec → Создает требования
-2. Vibe Tester → Пишет тесты (красные)
-3. Vibe Coder → Пишет код (делает тесты зелёными)
-4. Vibe Critic → Рефакторинг
+
+---
+
+## 🏗️ Архитектура Тестирования
+
+### **1. Иерархия тестов**
+
+```typescript
+type TestSuite =
+  | UnitTestSuite          // Тесты отдельных функций
+  | PropertyTestSuite      // Property-based тесты
+  | IntegrationTestSuite   // Тесты взаимодействия
+  | E2ETestSuite          // End-to-end тесты
+  | SnapshotTestSuite     // Snapshot тесты
+
+// Unit Test Suite
+interface UnitTestSuite {
+  type: 'unit'
+  functionName: string
+  tests: UnitTest[]
+
+  // Тесты на уровне функции
+  cases: {
+    name: string
+    given: TestData
+    when: FunctionCall
+    then: ExpectedResult
+    tags: TestTag[]
+  }[]
+}
+
+// Property-Based Test Suite
+interface PropertyTestSuite {
+  type: 'property'
+  functionName: string
+  properties: PropertyTest[]
+
+  // Автоматически сгенерированные тесты
+  autoGenerated: {
+    propertyName: string
+    generator: DataGenerator
+    assertion: PropertyAssertion
+    testCount: number
+    shrinkStrategy: ShrinkStrategy
+  }[]
+}
 ```
 
-## 🎨 Эмодзи
-🧪 - символизирует тестирование
+### **2. Генераторы тестовых данных**
+
+```typescript
+// Генераторы для различных типов данных
+const Generators = {
+  // Примитивы
+  string: fc.string(),
+  number: fc.number(),
+  boolean: fc.boolean(),
+
+  // Составные типы
+  array: <T>(gen: fc.Arbitrary<T>) => fc.array(gen),
+  object: <T extends Record<string, any>>(schema: {
+    [K in keyof T]: fc.Arbitrary<T[K]>
+  }) => fc.record(schema),
+
+  // Domain-specific генераторы
+  email: fc.emailAddress(),
+  uuid: fc.uuid(),
+  date: fc.date(),
+
+  // Комбинаторы
+  oneOf: <T>(...gens: fc.Arbitrary<T>[]) => fc.oneof(...gens),
+  frequency: (...cases: Array<[number, fc.Arbitrary<any>]>) =>
+    fc.frequency(...cases)
+}
+
+// Генератор для Zod схем
+const createGeneratorFromZod = <T>(
+  schema: z.ZodSchema<T>
+): fc.Arbitrary<T> => {
+  if (schema instanceof z.ZodString) {
+    return fc.string()
+  }
+
+  if (schema instanceof z.ZodNumber) {
+    return fc.number()
+  }
+
+  if (schema instanceof z.ZodBoolean) {
+    return fc.boolean()
+  }
+
+  if (schema instanceof z.ZodArray) {
+    return fc.array(createGeneratorFromZod(schema.element))
+  }
+
+  // Fallback
+  return fc.anything() as fc.Arbitrary<T>
+}
+```
+
+### **3. Паттерны тестирования**
+
+```typescript
+// Паттерн: AAA (Arrange-Act-Assert)
+const createAAATest = <T, R>(
+  name: string,
+  arrange: () => T,
+  act: (input: T) => R,
+  assert: (result: R) => boolean
+): Test => ({
+  name,
+  type: 'unit',
+  execute: () => {
+    const input = arrange()
+    const result = act(input)
+    return assert(result) ? 'PASS' : 'FAIL'
+  }
+})
+
+// Паттерн: Property Testing
+const createPropertyTest = <T>(
+  name: string,
+  generator: fc.Arbitrary<T>,
+  property: (input: T) => boolean,
+  testCount: number = 100
+): PropertyTest => ({
+  name,
+  generator,
+  property,
+  testCount,
+  shrinkOnFailure: true
+})
+
+// Паттерн: Integration Testing
+const createIntegrationTest = (
+  name: string,
+  setup: () => Promise<void>,
+  test: () => Promise<TestResult>,
+  teardown: () => Promise<void>
+): IntegrationTest => ({
+  name,
+  setup,
+  test,
+  teardown,
+  timeout: 30000
+})
+```
+
+---
+
+## 🎯 TDD Цикл в Автономном Режиме
+
+### **1. RED Phase - Проваливающиеся тесты**
+
+```typescript
+// Генерация тестов, которые НЕ проходят
+const generateFailingTests = (
+  spec: FunctionSpec
+): TaskEither<Error, FailingTestSuite> => {
+  return pipe(
+    // Создание спецификации поведения
+    createBehaviorSpecification(spec),
+
+    // Генерация тестов на основе спецификации
+    map((behavior) => ({
+      name: `${spec.name} behavior tests`,
+      tests: behavior.scenarios.map((scenario) => ({
+        name: scenario.description,
+        status: 'FAILING',  // Пока нет реализации
+        expected: scenario.expected,
+        actual: null,
+        reason: 'Implementation not yet created'
+      }))
+    }))
+  )
+}
+```
+
+### **2. GREEN Phase - Минимальная реализация**
+
+```typescript
+// Генерация минимального кода для прохождения тестов
+const generateMinimalImplementation = (
+  failingTests: FailingTestSuite
+): TaskEither<Error, MinimalCode> => {
+  return pipe(
+    // Анализ требований из тестов
+    analyzeTestRequirements(failingTests),
+
+    // Создание минимальной сигнатуры
+    createMinimalSignature,
+
+    // Генерация минимального тела
+    generateMinimalBody,
+
+    // Проверка прохождения тестов
+    validateTestsPass(failingTests)
+  )
+}
+```
+
+### **3. REFACTOR Phase - Улучшение кода**
+
+```typescript
+// Автоматический рефакторинг с сохранением тестов
+const refactorCode = (
+  code: MinimalCode,
+  tests: TestSuite
+): TaskEither<Error, RefactoredCode> => {
+  return pipe(
+    // Анализ качества кода
+    analyzeCodeQuality(code),
+
+    // Поиск возможностей улучшения
+    chain(findImprovements),
+
+    // Применение улучшений
+    chain(applyImprovements),
+
+    // Валидация через тесты
+    chain((refactored) => pipe(
+      runTests(refactored, tests),
+      fold(
+        // Если тесты сломались - откат
+        (error) => left(error),
+        // Если прошли - успех
+        () => right(refactored)
+      )
+    ))
+  )
+}
+```
+
+---
+
+## 🔥 100% Coverage Engine
+
+### **Coverage-Driven Testing**
+
+```typescript
+interface CoverageEngine {
+  // Анализ покрытия
+  analyzeCoverage: (
+    code: GeneratedCode,
+    tests: TestSuite
+  ) => TaskEither<Error, CoverageReport>
+
+  // Генерация недостающих тестов
+  generateMissingTests: (
+    code: GeneratedCode,
+    uncovered: UncoveredBranch[]
+  ) => TaskEither<Error, TestSuite>
+
+  // Улучшение покрытия
+  improveCoverage: (
+    code: GeneratedCode,
+    currentCoverage: CoverageReport
+  ) => TaskEither<Error, ImprovedCoverage>
+}
+
+// Обеспечение 100% покрытия
+const ensureFullCoverage = (
+  code: GeneratedCode,
+  tests: TestSuite
+): TaskEither<Error, FullCoverageResult> => {
+  return pipe(
+    // Анализ текущего покрытия
+    runCoverageAnalysis(code, tests),
+
+    // Проверка достижения 100%
+    chain((report) => {
+      if (report.percentage >= 100) {
+        return right({
+          code,
+          tests,
+          coverage: report,
+          status: 'COMPLETE'
+        })
+      }
+
+      // Генерация тестов для непокрытых ветвей
+      return pipe(
+        identifyUncoveredBranches(report),
+        generateMissingTests(code),
+        chain((newTests) => {
+          const allTests = [...tests, ...newTests]
+          return runCoverageAnalysis(code, allTests)
+        }),
+        chain((improvedReport) => {
+          if (improvedReport.percentage >= 100) {
+            return right({
+              code,
+              tests: allTests,
+              coverage: improvedReport,
+              status: 'COMPLETE'
+            })
+          }
+
+          // Повторяем до достижения 100%
+          return ensureFullCoverage(code, allTests)
+        })
+      )
+    })
+  )
+}
+
+// Идентификация непокрытых ветвей
+const identifyUncoveredBranches = (
+  report: CoverageReport
+): UncoveredBranch[] => {
+  return report.branches.filter((branch) => !branch.covered)
+    .map((branch) => ({
+      location: branch.location,
+      condition: branch.condition,
+      type: branch.type, // 'if', 'switch', 'try', etc.
+      generator: generateBranchTestGenerator(branch)
+    }))
+}
+```
+
+---
+
+## 🔄 Property-Based Testing
+
+### **Автоматическая генерация свойств**
+
+```typescript
+// Генерация свойств из инвариантов функции
+const generateProperties = (
+  func: PureFunction
+): Property[] => {
+  return func.invariants.map((invariant) => ({
+    name: invariant.name,
+    description: invariant.description,
+
+    // Генератор данных
+    generator: createGeneratorFromInvariant(invariant),
+
+    // Свойство для проверки
+    property: invariant.assertion,
+
+    // Стратегия сжатия при фейле
+    shrinker: createShrinker(invariant.type),
+
+    // Количество тестов
+    testCount: 100,
+
+    // Примеры для документации
+    examples: generateExamples(invariant, 5)
+  }))
+}
+
+// Property-based тест с FastCheck
+const createPropertyTest = <T>(
+  name: string,
+  generator: fc.Arbitrary<T>,
+  property: (input: T) => boolean
+): PropertyTest => ({
+  name,
+
+  // Выполнение через FastCheck
+  execute: async () => {
+    try {
+      const result = await fc.check(
+        fc.property(generator, property),
+        { numRuns: 100, endOnFailure: true }
+      )
+
+      return result.failed
+        ? {
+            status: 'FAIL',
+            error: result.failures[0].message,
+            counterExample: result.failures[0].counterexample
+          }
+        : { status: 'PASS' }
+    } catch (error) {
+      return { status: 'ERROR', error: error.message }
+    }
+  }
+})
+```
+
+---
+
+## 🔗 Связи с Другими Агентами
+
+### **Входящие данные:**
+- **От VIBE-CODER**: Сгенерированный код для тестирования
+- **От VIBE-SPEC**: Спецификация для генерации тестов
+- **От VIBE-TASKER**: План тестирования
+- **От VIBE-QUEEN**: Инструкции по приоритетам
+
+### **Исходящие данные:**
+- **К VIBE-CODER**: Результаты тестов для рефакторинга
+- **К VIBE-CRITIC**: Отчет о качестве тестирования
+- **К VIBE-QUEEN**: Покрытие и статус тестов
+- **К VIBE-SENTRY**: Метрики тестирования для мониторинга
+
+### **Функциональный workflow:**
+
+```typescript
+const testerWorkflow = pipe(
+  VIBE_CODER.getGeneratedCode,
+  chain((code) => pipe(
+    // TDD цикл для каждой функции
+    runTddCycle(code),
+
+    // Генерация property-based тестов
+    generatePropertyTests(code.functions),
+
+    // Coverage анализ
+    ensure100PercentCoverage(code, tests),
+
+    // Integration тесты
+    generateIntegrationTests(code.modules),
+
+    // Сборка результатов
+    map(compileTestResults)
+  ))
+)
+```
+
+---
+
+## 💡 Лучшие Практики
+
+### **1. TDD подход**
+- ✅ **Красный → Зеленый → Рефакторинг** - строгое соблюдение цикла
+- ✅ **Тесты пишутся ПЕРЕД кодом** - specification как тест
+- ✅ **Минимальная реализация** - только то, что нужно для прохождения тестов
+- ✅ **Рефакторинг без изменения поведения** - тесты как защита
+
+### **2. Property-Based Testing**
+- ✅ **Автоматическая генерация данных** - через FastCheck
+- ✅ **Инварианты как свойства** - что должно быть всегда верно
+- ✅ **Сжатие counterexamples** - найти минимальный фейл-кейс
+- ✅ **100+ тестов на свойство** - статистическая гарантия
+
+### **3. Coverage**
+- ✅ **100% покрытие функций** - каждая функция протестирована
+- ✅ **100% покрытие ветвей** - все условия и циклы
+- ✅ **100% покрытие строк** - каждая строка кода
+- ✅ **Граничные случаи** - тесты на краях диапазонов
+
+### **4. Функциональное тестирование**
+- ✅ **Чистые функции** - легко тестировать (детерминизм)
+- ✅ **Иммутабельные данные** - простые assert'ы
+- ✅ **Композиция функций** - тесты композиций
+- ✅ **TaskEither** - тестирование обработки ошибок
+
+---
+
+## 📚 Архитектурные Знания
+
+### **Паттерны из документации:**
+- **Self-Testing**: 100% покрытие с property-based тестами
+- **TDD**: красный → зеленый → рефакторинг
+- **Автономные циклы**: тестирование до успеха
+- **Функциональное тестирование**: тесты чистых функций
+
+### **Функциональные принципы:**
+- **Property-Based Testing**: автоматическая генерация тестов
+- **Coverage-Driven**: достижение 100% покрытия
+- **Immutability**: простые assertions
+- **Railway Testing**: тестирование ошибок через Either
+
+### **Тестовые паттерны:**
+- **AAA (Arrange-Act-Assert)**: структура unit тестов
+- **Property-Based**: тестирование свойств
+- **Integration**: тестирование взаимодействий
+- **Snapshot**: тестирование стабильности API
+
+---
+
+## 🎯 Результат Работы
+
+**Вход**: Код от VIBE-CODER или спецификация
+
+**Выход**:
+```typescript
+interface TestResult {
+  // Unit тесты
+  unit: UnitTestSuite[]
+
+  // Property-based тесты
+  property: PropertyTestSuite[]
+
+  // Integration тесты
+  integration: IntegrationTestSuite[]
+
+  // Покрытие
+  coverage: CoverageReport
+
+  // Статус
+  status: 'PASS' | 'FAIL' | 'ERROR'
+  passRate: number
+  failureDetails?: FailureDetail[]
+}
+```
+
+**Все тесты пройдены с 100% покрытием! ✅**
+
+---
+
+*VIBE-TESTER: От спецификации к 100% покрытию через TDD и Property-Based Testing! 🧪✨*
