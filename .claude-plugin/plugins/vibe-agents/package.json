@@ -1,0 +1,33 @@
+{
+  "name": "@vibee/vibe-agents",
+  "version": "1.0.0",
+  "description": "Vibe Agents - специализированные агенты для Vibee на базе Claude Code",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "vibee",
+    "agents",
+    "claude",
+    "ai",
+    "elizaos",
+    "automation"
+  ],
+  "author": "Vibee Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vibee/vibe-agents.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vibee/vibe-agents/issues"
+  },
+  "homepage": "https://github.com/vibee/vibe-agents#readme",
+  "files": [
+    ".claude/agents",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
