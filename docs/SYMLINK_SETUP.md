@@ -9,7 +9,7 @@
 
 Создать **единый источник правды** для плагина Vibe Agents, где:
 - Центральный репозиторий: `/Users/playra/vibee/vibe-agents-plugin`
-- Marketplace: `/Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents` (симлинк)
+- Marketplace: `/Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents` (симлинк)
 - Пользовательская установка: `~/.claude/plugins/vibe-agents-marketplace/plugins/vibe-agents` (симлинк на marketplace)
 
 ---
@@ -28,14 +28,14 @@
     └── docs/
 
 📦 Marketplace (ЕДИНСТВЕННАЯ КОПИЯ)
-└── /Users/playra/vibee/vibe-agents-marketplace-clean/
+└── /Users/playra/vibee/vibe-agents-marketplace/
     └── plugins/
         └── vibe-agents/ → СИМЛИНК → /Users/playra/vibee/vibe-agents-plugin/
 
 📦 Пользовательская установка
 └── ~/.claude/plugins/vibe-agents-marketplace/
     └── plugins/
-        └── vibe-agents/ → СИМЛИНК → /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
+        └── vibe-agents/ → СИМЛИНК → /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
 ```
 
 ---
@@ -77,7 +77,7 @@ ls -la /Users/playra/vibee/vibe-agents-plugin/
 
 ```bash
 # Создать симлинк
-cd /Users/playra/vibee/vibe-agents-marketplace-clean/
+cd /Users/playra/vibee/vibe-agents-marketplace/
 mkdir -p plugins
 ln -s /Users/playra/vibee/vibe-agents-plugin plugins/vibe-agents
 
@@ -94,7 +94,7 @@ curl -fsSL https://raw.githubusercontent.com/vibee/vibe-agents-plugin/main/insta
 
 # Проверить симлинк
 ls -la ~/.claude/plugins/vibe-agents-marketplace/plugins/vibe-agents
-# Должно показать: -> /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
+# Должно показать: -> /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
 ```
 
 ---
@@ -118,13 +118,13 @@ grep -q "v2.0.60" /Users/playra/vibee/vibe-agents-plugin/.claude-plugin/plugin.j
 
 ```bash
 # Marketplace существует
-test -d /Users/playra/vibee/vibe-agents-marketplace-clean && echo "✅ Marketplace exists"
+test -d /Users/playra/vibee/vibe-agents-marketplace && echo "✅ Marketplace exists"
 
 # Симлинк создан
-test -L /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents && echo "✅ Symlink exists"
+test -L /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents && echo "✅ Symlink exists"
 
 # Симлинк указывает на правильное место
-readlink /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
+readlink /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
 # Должно показать: /Users/playra/vibee/vibe-agents-plugin
 ```
 
@@ -139,7 +139,7 @@ test -L ~/.claude/plugins/vibe-agents-marketplace/plugins/vibe-agents && echo "�
 
 # Симлинк указывает на marketplace
 readlink ~/.claude/plugins/vibe-agents-marketplace/plugins/vibe-agents
-# Должно показать: /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
+# Должно показать: /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
 ```
 
 ---
@@ -155,7 +155,7 @@ git add .
 git commit -m "feat: update description"
 
 # Проверить в marketplace
-ls -la /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents/
+ls -la /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents/
 # Изменения сразу видны (благодаря симлинку)
 ```
 
@@ -205,8 +205,8 @@ echo "=== Central Repository ==="
 ls -ld /Users/playra/vibee/vibe-agents-plugin/
 
 echo -e "\n=== Marketplace Symlink ==="
-ls -ld /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
-readlink -f /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
+ls -ld /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
+readlink -f /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
 
 echo -e "\n=== User Symlink (if exists) ==="
 if [ -L ~/.claude/plugins/vibe-agents-marketplace/plugins/vibe-agents ]; then
@@ -221,13 +221,13 @@ fi
 
 ```bash
 # В marketplace
-cd /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/
+cd /Users/playra/vibee/vibe-agents-marketplace/plugins/
 rm -f vibe-agents
 ln -s /Users/playra/vibee/vibe-agents-plugin vibe-agents
 
 # Для пользователя
 rm -f ~/.claude/plugins/vibe-agents-marketplace/plugins/vibe-agents
-ln -s /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents ~/.claude/plugins/vibe-agents-marketplace/plugins/vibe-agents
+ln -s /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents ~/.claude/plugins/vibe-agents-marketplace/plugins/vibe-agents
 ```
 
 ### Синхронизировать изменения
@@ -249,22 +249,22 @@ git pull origin main
 
 ```bash
 # Проверить цель симлинка
-ls -l /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
+ls -l /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
 
 # Если цель не существует, пересоздать
-rm /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
-ln -s /Users/playra/vibee/vibe-agents-plugin /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
+rm /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
+ln -s /Users/playra/vibee/vibe-agents-plugin /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
 ```
 
 ### Проблема: Изменения не видны
 
 ```bash
 # Проверить тип файла
-file /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
+file /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
 # Должно показать: symbolic link
 
 # Проверить цель симлинка
-readlink /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
+readlink /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
 
 # Принудительно обновить кэш
 cd /Users/playra/vibee/vibe-agents-plugin/
@@ -276,11 +276,11 @@ git reset --hard origin/main
 
 ```bash
 # Проверить циклические ссылки
-find /Users/playra/vibee/vibe-agents-marketplace-clean -type l -exec sh -c 'readlink "$1" | grep -q "$(basename "$1")" && echo "CIRCULAR: $1"' _ {} \;
+find /Users/playra/vibee/vibe-agents-marketplace -type l -exec sh -c 'readlink "$1" | grep -q "$(basename "$1")" && echo "CIRCULAR: $1"' _ {} \;
 
 # Если есть циклы, пересоздать симлинки
-rm /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
-ln -s /Users/playra/vibee/vibe-agents-plugin /Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents
+rm /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
+ln -s /Users/playra/vibee/vibe-agents-plugin /Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents
 ```
 
 ---
@@ -302,7 +302,7 @@ if [ ! -d "/Users/playra/vibee/vibe-agents-plugin" ]; then
 fi
 
 # Проверить marketplace симлинк
-if [ ! -L "/Users/playra/vibee/vibe-agents-marketplace-clean/plugins/vibe-agents" ]; then
+if [ ! -L "/Users/playra/vibee/vibe-agents-marketplace/plugins/vibe-agents" ]; then
     echo "❌ Marketplace symlink not found"
     ERRORS=$((ERRORS + 1))
 fi
