@@ -1,22 +1,60 @@
 {
   "name": "vibe-agents-marketplace",
-  "version": "1.0.0",
-  "description": "Centralized marketplace for Vibe Agents Plugin",
-  "source": "https://github.com/vibee/vibe-agents-plugin",
+  "version": "2.0.60",
+  "description": "Queen Bee Orchestration System - 21 Professional AI Agents for Autonomous Development with Swarm Intelligence",
+  "source": "https://github.com/gHashTag/vibe-agents-marketplace",
   "plugins": [
     {
       "name": "vibe-agents",
       "version": "v2.0.60",
       "path": "plugins/vibe-agents",
-      "installed": true,
+      "installed": false,
       "is_symlink": true,
-      "source_path": "/Users/playra/vibee/vibe-agents-plugin",
-      "description": "Queen Bee Orchestration System - 21 Professional AI Agents for Autonomous Development",
-      "installed_at": "2025-11-18T11:58:00Z"
+      "description": "Queen Bee Orchestration System - 21 Professional AI Agents for Autonomous Development with Swarm Intelligence",
+      "features": [
+        "21 профессиональный агент",
+        "Swarm Intelligence Architecture",
+        "Functional Programming Core",
+        "500+ TypeScript примеров",
+        "105+ экспертных навыков",
+        "GitHub Spec Kit интеграция",
+        "Multi-Agent Orchestration",
+        "TDD подход",
+        "Автоматическое тестирование",
+        "Security аудит",
+        "CI/CD интеграция"
+      ],
+      "agents": [
+        "vibe-ai-llm",
+        "vibe-cicd",
+        "vibe-coder",
+        "vibe-critic",
+        "vibe-devops",
+        "vibe-diagnostics",
+        "vibe-elizaos",
+        "vibe-knowledge-keeper",
+        "vibe-langfuse",
+        "vibe-lead",
+        "vibe-learn",
+        "vibe-mcp",
+        "vibe-queen",
+        "vibe-roi",
+        "vibe-security",
+        "vibe-sentry",
+        "vibe-spec",
+        "vibe-tasker",
+        "vibe-tester",
+        "vibe-typescript",
+        "vibe-updater"
+      ],
+      "commands": [
+        "/task - Мультиагентная задача",
+        "/learn - Интерактивное обучение"
+      ]
     }
   ],
   "settings": {
-    "auto_update": false,
+    "auto_update": true,
     "symlink_mode": true
   }
 }
